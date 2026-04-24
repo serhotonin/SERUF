@@ -53,71 +53,6 @@ const sizzle = keyframes`
 
 // --- Simulation Components ---
 
-const PotionSimulation: React.FC<{ sandbox: boolean }> = ({ sandbox }) => {
-  const [level, setLevel] = useState(0);
-  const [color, setColor] = useState('rgba(255,255,255,0.1)');
-  const [chaos, setChaos] = useState(false);
-
-  const addPotion = (c: string) => {
-    if (chaos) return;
-    setLevel(prev => Math.min(prev + 20, 100));
-    setColor(c);
-    if (sandbox && level >= 80) {
-      setChaos(true);
-      setTimeout(() => { setChaos(false); setLevel(0); setColor('rgba(255,255,255,0.1)'); }, 3000);
-    }
-  };
-
-  return (
-    <Box sx={{ position: 'relative', width: '100%', height: 400, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', animation: chaos ? `${shake} 0.5s infinite` : 'none' }}>
-      {/* Background Elements */}
-      <Box sx={{ position: 'absolute', bottom: 20, width: 200, height: 40, bgcolor: '#442b1d', borderRadius: '50% 50% 10% 10%', zIndex: 1 }} />
-      
-      {/* Fire */}
-      <Box sx={{ display: 'flex', gap: 1, position: 'absolute', bottom: 45, zIndex: 0 }}>
-        {[...Array(5)].map((_, i) => (
-          <Box key={i} sx={{ width: 20, height: 40, bgcolor: i % 2 ? '#ff4d00' : '#ff9100', borderRadius: '50% 50% 20% 20%', animation: `${fire} ${0.5 + i*0.1}s infinite ease-in-out` }} />
-        ))}
-      </Box>
-
-      {/* Cauldron */}
-      <Box sx={{ position: 'relative', width: 180, height: 160, zIndex: 2 }}>
-         <Box sx={{ position: 'absolute', top: 0, width: '100%', height: '100%', border: '8px solid #222', borderRadius: '10% 10% 80% 80%', bgcolor: '#1a1a1a', overflow: 'hidden' }}>
-            <Box sx={{ position: 'absolute', bottom: 0, width: '100%', height: `${level}%`, bgcolor: color, transition: 'all 0.8s ease-out', boxShadow: `inset 0 10px 30px rgba(0,0,0,0.5), 0 0 20px ${color}` }} />
-            {level > 0 && [...Array(8)].map((_, i) => (
-              <Box key={i} sx={{ position: 'absolute', bottom: 10, left: `${10 + i * 12}%`, width: 10, height: 10, bgcolor: color, borderRadius: '50%', animation: `${bubble} ${1 + Math.random()}s infinite ease-in`, opacity: 0.5 }} />
-            ))}
-         </Box>
-         <Box sx={{ position: 'absolute', left: -20, top: '30%', width: 30, height: 30, border: '6px solid #222', borderRadius: '50%', zIndex: -1 }} />
-         <Box sx={{ position: 'absolute', right: -20, top: '30%', width: 30, height: 30, border: '6px solid #222', borderRadius: '50%', zIndex: -1 }} />
-      </Box>
-
-      {/* Potion Shelf */}
-      <Box sx={{ display: 'flex', gap: 3, mt: 6, zIndex: 3 }}>
-        {[
-          { name: 'Ejder Kanı', color: '#ef4444' },
-          { name: 'Gece Otu', color: '#8b5cf6' },
-          { name: 'Güneş Özü', color: '#f59e0b' },
-          { name: 'Buz Kristali', color: '#3b82f6' }
-        ].map(p => (
-          <Box key={p.name} sx={{ textAlign: 'center', cursor: 'pointer', transition: 'transform 0.2s', '&:hover': { transform: 'translateY(-10px)' } }} onClick={() => addPotion(p.color)}>
-            <Box sx={{ width: 40, height: 60, border: '2px solid #555', borderRadius: '10% 10% 40% 40%', position: 'relative', bgcolor: 'rgba(255,255,255,0.05)', mb: 1, overflow: 'hidden' }}>
-               <Box sx={{ position: 'absolute', bottom: 0, width: '100%', height: '70%', bgcolor: p.color, opacity: 0.8 }} />
-            </Box>
-            <Typography variant="caption" sx={{ fontWeight: 700 }}>{p.name}</Typography>
-          </Box>
-        ))}
-      </Box>
-
-      {chaos && (
-        <Box sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(255,0,0,0.3)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}>
-           <Typography variant="h2" sx={{ fontWeight: 900, color: 'white', textShadow: '0 0 20px black' }}>PATLAMA!</Typography>
-        </Box>
-      )}
-    </Box>
-  );
-};
-
 const AcidBaseSimulation: React.FC<{ sandbox: boolean }> = ({ sandbox }) => {
   const [ph, setPh] = useState(7);
   const [isMelting, setIsMelting] = useState(false);
@@ -370,10 +305,7 @@ const GradeView: React.FC = () => {
   const renderSimulationContent = () => {
     if (!activeTopic) return null;
     if (activeTopic.includes("Karışımlar")) return <AlchemyMixtures />;
-<<<<<<< HEAD
-=======
     if (activeTopic.includes("Güneş Sistemi")) return <SolarSystemSimulation />;
->>>>>>> 2f23365 (Güneş Sistemi deneyi güncellemeleri ve iyileştirmeler)
     if (activeTopic.includes("Asitler")) return <AcidBaseSimulation sandbox={sandboxMode} />;
     if (activeTopic.includes("Basıncı")) return <PressureSimulation sandbox={sandboxMode} />;
     if (activeTopic.includes("İklim")) return <WeatherSimulation sandbox={sandboxMode} />;

@@ -1,7 +1,19 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
+
+// --- TYPES ---
+interface Planet {
+  id: string;
+  name: string;
+  type: string;
+  order: number;
+  color: string;
+  image: string;
+  size: number;
+  features: string[];
+}
 
 // --- CURRICULUM DATA ---
-const PLANETS = [
+const PLANETS: Planet[] = [
   { 
     id: 'mercury', 
     name: 'Merkür', 
@@ -92,19 +104,19 @@ const QUESTIONS = [
 
 const SolarSystemSimulation = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const [userOrder, setUserOrder] = useState([]);
-  const [sizeOrder, setSizeOrder] = useState([]);
-  const [categories, setCategories] = useState({ inner: [], outer: [] });
-  const [selectedPlanet, setSelectedPlanet] = useState(null);
+  const [userOrder, setUserOrder] = useState<Planet[]>([]);
+  const [sizeOrder, setSizeOrder] = useState<Planet[]>([]);
+  const [categories, setCategories] = useState<{ inner: Planet[], outer: Planet[] }>({ inner: [], outer: [] });
+  const [selectedPlanet, setSelectedPlanet] = useState<Planet | null>(null);
   const [feedback, setFeedback] = useState({ message: 'Güneş Sistemi Görevine Hoş Geldin Kaptan!', type: 'info' });
-  const [shuffledPlanets, setShuffledPlanets] = useState([]);
+  const [shuffledPlanets, setShuffledPlanets] = useState<Planet[]>([]);
 
   useEffect(() => {
     setShuffledPlanets([...PLANETS].sort(() => Math.random() - 0.5));
   }, []);
 
   // --- ACTIONS ---
-  const handleOrderAdd = (planet) => {
+  const handleOrderAdd = (planet: Planet) => {
     if (userOrder.find(p => p.id === planet.id)) return;
     const newOrder = [...userOrder, planet];
     setUserOrder(newOrder);
@@ -119,7 +131,7 @@ const SolarSystemSimulation = () => {
     }
   };
 
-  const handleOrderRemove = (planetId) => {
+  const handleOrderRemove = (planetId: string) => {
     const newOrder = userOrder.filter(p => p.id !== planetId);
     setUserOrder(newOrder);
     setFeedback({ message: 'Gezegen yörüngeden kaldırıldı.', type: 'info' });
@@ -134,7 +146,7 @@ const SolarSystemSimulation = () => {
     setFeedback({ message: 'Son işlem geri alındı.', type: 'info' });
   };
 
-  const handleSizeAdd = (planet) => {
+  const handleSizeAdd = (planet: Planet) => {
     if (sizeOrder.find(p => p.id === planet.id)) return;
     const newOrder = [...sizeOrder, planet];
     setSizeOrder(newOrder);
@@ -152,15 +164,15 @@ const SolarSystemSimulation = () => {
     }
   };
 
-  const handleSizeRemove = (planetId) => {
+  const handleSizeRemove = (planetId: string) => {
     const newOrder = sizeOrder.filter(p => p.id !== planetId);
     setSizeOrder(newOrder);
   };
 
-  const handleCategoryAdd = (planet, category) => {
+  const handleCategoryAdd = (planet: Planet, category: 'inner' | 'outer') => {
     if (categories.inner.find(p => p.id === planet.id) || categories.outer.find(p => p.id === planet.id)) return;
     
-    const newCategories = { ...categories, [category]: [...categories[category], planet] };
+    const newCategories = { ...categories, [category]: [...categories[category as 'inner' | 'outer'], planet] };
     setCategories(newCategories);
 
     if (newCategories.inner.length + newCategories.outer.length === PLANETS.length) {
@@ -253,9 +265,9 @@ const SolarSystemSimulation = () => {
                   if (activeStep === 1) setSelectedPlanet(planet); // Show details before categorizing
                   if (activeStep === 2) handleSizeAdd(planet);
                 }}
-                disabled={(activeStep === 0 && userOrder.find(p => p.id === planet.id)) || 
+                disabled={!!((activeStep === 0 && userOrder.find(p => p.id === planet.id)) || 
                           (activeStep === 1 && (categories.inner.find(p => p.id === planet.id) || categories.outer.find(p => p.id === planet.id))) ||
-                          (activeStep === 2 && sizeOrder.find(p => p.id === planet.id))}
+                          (activeStep === 2 && sizeOrder.find(p => p.id === planet.id)))}
                 className={`flex flex-col items-center p-3 rounded-2xl border-2 transition-all duration-300
                   ${((activeStep === 0 && userOrder.find(p => p.id === planet.id)) || 
                      (activeStep === 1 && (categories.inner.find(p => p.id === planet.id) || categories.outer.find(p => p.id === planet.id))) ||

@@ -1,7 +1,34 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+
+// --- TYPES ---
+interface Ingredient {
+  id: string;
+  name: string;
+  state: string;
+  color: string;
+  icon: string;
+  density: number;
+  solubleInWater: boolean;
+  solubleInAlcohol: boolean;
+  magnetic?: boolean;
+  grain?: string;
+}
+
+interface Tool {
+  id: string;
+  name: string;
+  icon: string;
+  desc: string;
+}
+
+interface AnalysisResult {
+  solution: string;
+  title: string;
+  reason?: string;
+}
 
 // --- CURRICULUM DATA ---
-const INGREDIENTS = [
+const INGREDIENTS: Ingredient[] = [
   { id: 'su', name: 'Saf Su', state: 'Sıvı', color: 'bg-cyan-400', icon: '💧', density: 1.0, solubleInWater: true, solubleInAlcohol: true },
   { id: 'alkol', name: 'Etil Alkol', state: 'Sıvı', color: 'bg-purple-300', icon: '🧪', density: 0.78, solubleInWater: true, solubleInAlcohol: true },
   { id: 'yag', name: 'Zeytinyağı', state: 'Sıvı', color: 'bg-amber-400', icon: '🍯', density: 0.92, solubleInWater: false, solubleInAlcohol: false },
@@ -14,7 +41,7 @@ const INGREDIENTS = [
   { id: 'nikel', name: 'Nikel Tozu', state: 'Katı', color: 'bg-slate-300', icon: '🔘', density: 8.9, magnetic: true, solubleInWater: false, solubleInAlcohol: false, grain: 'small' },
 ];
 
-const TOOLS = [
+const TOOLS: Tool[] = [
   { id: 'magnet', name: 'Mıknatısla Ayırma', icon: '🧲', desc: 'Manyetik Özellik Farkı' },
   { id: 'funnel', name: 'Ayırma Hunisi', icon: '🏺', desc: 'Yoğunluk Farkı (Sıvı-Sıvı)' },
   { id: 'distillation', name: 'Ayrımsal Damıtma', icon: '⚗️', desc: 'Kaynama Noktası Farkı' },
@@ -26,13 +53,13 @@ const TOOLS = [
 ];
 
 const AlchemyMixtures = () => {
-  const [selected, setSelected] = useState([]);
-  const [phase, setPhase] = useState('selection'); // selection, mixed, result
+  const [selected, setSelected] = useState<Ingredient[]>([]);
+  const [phase, setPhase] = useState<'selection' | 'mixed' | 'result'>('selection'); 
   const [isWaterAdded, setIsWaterAdded] = useState(false);
   const [feedback, setFeedback] = useState({ message: 'Malzemeleri kazana ekleyerek deneye başla!', type: 'info' });
 
   // --- CORE ENGINE LOGIC ---
-  const analysis = useMemo(() => {
+  const analysis = useMemo<AnalysisResult | null>(() => {
     if (selected.length < 2) return null;
     
     const items = [...selected];
@@ -89,7 +116,7 @@ const AlchemyMixtures = () => {
   }, [selected, isWaterAdded]);
 
   // --- ACTIONS ---
-  const toggleSelect = (ing) => {
+  const toggleSelect = (ing: Ingredient) => {
     if (phase !== 'selection') return;
     if (selected.find(i => i.id === ing.id)) {
       setSelected(selected.filter(i => i.id !== ing.id));
@@ -109,7 +136,7 @@ const AlchemyMixtures = () => {
     setFeedback({ message: 'Su eklendi! Çözünen maddeler çözüldü. Şimdi ayırma işlemine geçebilirsin.', type: 'info' });
   };
 
-  const handleToolUse = (toolId) => {
+  const handleToolUse = (toolId: string) => {
     if (!analysis) return;
 
     if (toolId === analysis.solution) {
