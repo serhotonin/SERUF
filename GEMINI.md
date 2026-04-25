@@ -1,2 +1,2 @@
-Ben sana github a kodu pushlamanı söylediğimde Serotonin branchine pushla
-Pull isteidğimde mainden al
+ben sana github a pushlamamı söylediğimde bu branche push la "yusuf"    
+kodu pullamamı söylediğimde mainden alsın

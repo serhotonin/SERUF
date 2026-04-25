@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 const { body, param, validationResult } = require('express-validator');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const db = require('./db');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -22,16 +23,21 @@ const TURKISH_CITIES = [
 ];
 
 // 1. Security Headers
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false,
+}));
 
 // 2. Controlled CORS
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  origin: '*',
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
 
 app.use(express.json({ limit: '10kb' }));
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../dist')));
 
 // 3. Rate Limiting
 const globalLimiter = rateLimit({
@@ -266,7 +272,14 @@ app.post('/api/notes', [
   }
 });
 
-app.use((req, res) => res.status(404).json({ error: 'Not found' }));
+// All other GET requests not handled before will return the React app
+app.get('*', (req, res) => {
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
+  } else {
+    res.status(404).json({ error: 'API route not found' });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`SECURE Backend running on port ${PORT}`);
